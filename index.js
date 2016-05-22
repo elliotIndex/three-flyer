@@ -1,3 +1,5 @@
+var PI_2 = Math.PI/2;
+
 var Colors = {
 	red: 0xf25346,
 	white: 0xd8d0d1,
@@ -23,14 +25,16 @@ function init() {
 	createLights();
 
 	// add the objects
-	createPlane();
-	createSea();
-	createSky();
+	// createPlane();
+	// createSea();
+	// createSky();
 
 	// start a loop that will update the objects' positions
 	// and render the scene on each frame
-	loop();
+	// loop();
 }
+
+var scene;
 
 function createScene() {
 	// Get the width and the height of the screen,
@@ -40,7 +44,7 @@ function createScene() {
 	var WIDTH = window.innerWidth;
 
 	// Create the scene
-	var scene = new THREE.Scene();
+  scene = new THREE.Scene();
 
 	// Add a fog effect to the scene; same color as the
 	// background color used in the style sheet
@@ -70,7 +74,7 @@ function createScene() {
 		alpha: true,
 
 		// Activate the anti-aliasing; this is less performant,
-		// but, as our project is low-poly based, it should be fine :)
+		// but, as our project is low-poly based, it should be fine : )
 		antialias: true
 	});
 
@@ -110,7 +114,7 @@ function createLights() {
 	// It acts like the sun, that means that all the rays produced are parallel.
 	var shadowLight = new THREE.DirectionalLight(Colors.pureWhite, .9);
 
-	// Set the direction of the light  
+	// Set the direction of the light
 	shadowLight.position.set(
     150, // right
     350, // up
@@ -136,4 +140,46 @@ function createLights() {
 	// to activate the lights, just add them to the scene
 	scene.add(hemisphereLight);
 	scene.add(shadowLight);
+}
+
+// First let's define a Sea object :
+var Sea = function(){
+
+	// create the geometry (shape) of the cylinder;
+	var geom = new THREE.CylinderGeometry(
+    600, // radius top
+    600, // radius bottom
+    800, // height
+    40, // num secments on radius
+    10
+  ); // num segments vertically
+
+	// rotate the geometry on the x axis
+	geom.applyMatrix(new THREE.Matrix4().makeRotationX(-PI_2));
+
+	// create the material
+	var mat = new THREE.MeshPhongMaterial({
+		color: Colors.blue,
+		transparent: true,
+		opacity: .6,
+		shading: THREE.FlatShading, // could use smooth shading
+	});
+
+	// To create an object in Three.js, we have to create a mesh
+	// which is a combination of a geometry and some material
+	this.mesh = new THREE.Mesh(geom, mat);
+
+	// Allow the sea to receive shadows
+	this.mesh.receiveShadow = true;
+}
+
+// Instantiate the sea and add it to the scene:
+function createSea(){
+	var sea = new Sea();
+
+	// push it a little bit at the bottom of the scene
+	sea.mesh.position.y = -600;
+
+	// add the mesh of the sea to the scene
+	scene.add(sea.mesh);
 }
