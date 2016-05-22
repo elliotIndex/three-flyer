@@ -25,16 +25,16 @@ function init() {
 	createLights();
 
 	// add the objects
-	// createPlane();
+	createPlane();
 	createSea();
-	// createSky();
+	createSky();
 
 	// start a loop that will update the objects' positions
 	// and render the scene on each frame
-	// loop();
+	loop();
 }
 
-var scene;
+var scene, renderer, camera, airplane, sea, sky;
 
 function createScene() {
 	// Get the width and the height of the screen,
@@ -55,7 +55,7 @@ function createScene() {
 	var aspectRatio = WIDTH / HEIGHT;
 	var nearPlane = 1;
 	var farPlane = 10000;
-	var camera = new THREE.PerspectiveCamera(
+  camera = new THREE.PerspectiveCamera(
 		fieldOfView,
 		aspectRatio,
 		nearPlane,
@@ -68,15 +68,15 @@ function createScene() {
 	camera.position.y = 100; // move camera 'up'
 
 	// Create the renderer
-	var renderer = new THREE.WebGLRenderer({
-		// Allow transparency to show the gradient background
-		// we defined in the CSS
-		alpha: true,
+  renderer = new THREE.WebGLRenderer({
+	// Allow transparency to show the gradient background
+	// we defined in the CSS
+  	alpha: true,
 
-		// Activate the anti-aliasing; this is less performant,
-		// but, as our project is low-poly based, it should be fine : )
-		antialias: true
-	});
+  	// Activate the anti-aliasing; this is less performant,
+  	// but, as our project is low-poly based, it should be fine : )
+  	antialias: true
+  });
 
 	// Define the size of the renderer; in this case,
 	// it will fill the entire screen
@@ -175,7 +175,7 @@ function Sea(){
 
 // Instantiate the sea and add it to the scene:
 function createSea(){
-	var sea = new Sea();
+  sea = new Sea();
 
 	// push it a little bit at the bottom of the scene
 	sea.mesh.position.y = -600;
@@ -270,7 +270,7 @@ function Sky(){
 // Now we instantiate the sky and push its center a bit
 // towards the bottom of the screen
 function createSky(){
-	var sky = new Sky();
+  sky = new Sky();
 	sky.mesh.position.y = -600;
 	scene.add(sky.mesh);
 }
@@ -332,3 +332,23 @@ function AirPlane() {
   this.propeller.position.set(50,0,0);
   this.mesh.add(this.propeller);
 };
+
+function createPlane(){
+  airplane = new AirPlane();
+	airplane.mesh.scale.set(.25,.25,.25);
+	airplane.mesh.position.y = 100;
+	scene.add(airplane.mesh);
+}
+
+function loop(){
+	// Rotate the propeller, the sea and the sky
+	airplane.propeller.rotation.x += 0.3;
+	sea.mesh.rotation.z += .005;
+	sky.mesh.rotation.z += .01;
+
+	// render the scene
+	renderer.render(scene, camera);
+
+	// call the loop function again
+	requestAnimationFrame(loop);
+}
